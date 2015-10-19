@@ -78,11 +78,11 @@ namespace Iniect.io
         #region Public Methods
 
         /// <summary>
-        /// Registers interfact T with an implementation from assembly
+        /// Binds interfact T with an implementation from assembly
         /// </summary>
-        /// <typeparam name="T">Interface to Register</typeparam>
+        /// <typeparam name="T">Interface to Bind</typeparam>
         /// <param name="assembly"></param>
-        public static void Register<T>(Assembly assembly = null)
+        public static void Bind<T>(Assembly assembly = null)
         {
             var type = typeof(T);
 
@@ -90,26 +90,26 @@ namespace Iniect.io
 
             if (assembly == null) throw new NullAssemblyException();
 
-            Register(type, assembly);
+            Bind(type, assembly);
         }
 
-        public static void Register<TInterface, TClass>()
+        public static void Bind<TInterface, TClass>()
         {
             var interfaceType = typeof(TInterface);
             var classType = typeof(TClass);
 
-            Register(interfaceType, classType);
+            Bind(interfaceType, classType);
         }
 
-        public static void Register<TInterface>(TInterface implementation)
+        public static void Bind<TInterface>(TInterface implementation)
         {
             var interfaceType = typeof(TInterface);
             InstanceRegistry.TryAdd(interfaceType, implementation);
         }
 
-        public static bool IsRegistered<T>()
+        public static bool IsBound<T>()
         {
-            return IsRegistered(typeof(T));
+            return IsBound(typeof(T));
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Iniect.io
 
         #region Private Methods
 
-        private static void Register(Type type, Assembly assembly)
+        private static void Bind(Type type, Assembly assembly)
         {
             var implementations = assembly
                 .GetTypes()
@@ -161,14 +161,14 @@ namespace Iniect.io
             if (implementations.Count == 0) throw new NoImplementationFoundException();
             if (implementations.Count > 1) throw new MultipleImplementationFoundException();
 
-            Register(type, implementations.First());
+            Bind(type, implementations.First());
         }
 
-        private static bool TryRegister(Type type, Assembly assembly)
+        private static bool TryBind(Type type, Assembly assembly)
         {
             try
             {
-                Register(type, assembly);
+                Bind(type, assembly);
                 return true;
             }
             catch (Exception ex)
@@ -178,7 +178,7 @@ namespace Iniect.io
             }
         }
 
-        private static void Register(Type interfaceType, Type classType)
+        private static void Bind(Type interfaceType, Type classType)
         {
             if (!interfaceType.IsInterface) throw new Exception("Type must be an interface."); //TODO: replace by custom exception
             if (classType.IsInterface) throw new Exception("classType must be a class."); //TODO: replace by custom exception
@@ -188,9 +188,9 @@ namespace Iniect.io
             MatchRegistry.TryAdd(interfaceType, classType);
         }
 
-        private static bool IsRegistered(Type interfaceType)
+        private static bool IsBound(Type interfaceType)
         {
-            TryRegister(interfaceType, AutomaticMatchAssembly ?? interfaceType.Assembly);
+            TryBind(interfaceType, AutomaticMatchAssembly ?? interfaceType.Assembly);
 
             return MatchRegistry.ContainsKey(interfaceType);
         }
@@ -198,7 +198,7 @@ namespace Iniect.io
         //todo: refactor
         private static object CreateInstanceFromInterface(Type ttype)
         {
-            if (!IsRegistered(ttype)) throw new Exception("could not find interface-class map");//TODO: replace by custom exception
+            if (!IsBound(ttype)) throw new Exception("could not find interface-class map");//TODO: replace by custom exception
             {
                 var implementationType = MatchRegistry[ttype];
 
@@ -235,7 +235,7 @@ namespace Iniect.io
             var ttype = instance.GetType();
 
             var diFields = ttype.GetFields()
-                .Where(x => x.FieldType.IsInterface && IsRegistered(x.FieldType) && x.GetValue(instance) == null)
+                .Where(x => x.FieldType.IsInterface && IsBound(x.FieldType) && x.GetValue(instance) == null)
                 .ToList();
             foreach (var fieldInfo in diFields)
             {
@@ -248,7 +248,7 @@ namespace Iniect.io
             var OK = true;
             foreach (var parameterInfo in constructorInfo.GetParameters())
             {
-                if (!IsRegistered(parameterInfo.ParameterType))
+                if (!IsBound(parameterInfo.ParameterType))
                 {
                     OK = false;
                 }
@@ -261,7 +261,7 @@ namespace Iniect.io
             var ttype = instance.GetType();
 
             var diProperties = ttype.GetProperties() //x.GetValue may throw an exception when the getter throw.
-                .Where(x => x.CanWrite && x.PropertyType.IsInterface && IsRegistered(x.PropertyType) && x.GetValue(instance) == null)
+                .Where(x => x.CanWrite && x.PropertyType.IsInterface && IsBound(x.PropertyType) && x.GetValue(instance) == null)
                 .ToList();
             foreach (var propertyInfo in diProperties)
             {

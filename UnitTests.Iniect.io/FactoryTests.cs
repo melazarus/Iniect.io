@@ -13,15 +13,15 @@ namespace UnitTests.Iniect.io
         public void IsRegistered_AutomaticMatchAssembly_true()
         {
             Factory.AutomaticMatchAssembly = Assembly.GetExecutingAssembly();
-            var result = Factory.IsRegistered<IInterfaceA>();
+            var result = Factory.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void RegisterClassIsRegistered_true()
         {
-            Factory.Register<IInterfaceA, ClassA>();
-            var result = Factory.IsRegistered<IInterfaceA>();
+            Factory.Bind<IInterfaceA, ClassA>();
+            var result = Factory.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
@@ -35,7 +35,7 @@ namespace UnitTests.Iniect.io
         [TestMethod]
         public void Create_mapped_IsNotNull()
         {
-            Factory.Register<IInterfaceA>(Assembly.GetExecutingAssembly());
+            Factory.Bind<IInterfaceA>(Assembly.GetExecutingAssembly());
             var result = Factory.Create<IInterfaceA>();
             Assert.IsNotNull(result);
         }
@@ -67,8 +67,8 @@ namespace UnitTests.Iniect.io
         [TestMethod]
         public void Create_ManualMappedAandB_DiNoNull()
         {
-            Factory.Register<IInterfaceA, ClassA>();
-            Factory.Register<IInterfaceB, ClassB>();
+            Factory.Bind<IInterfaceA, ClassA>();
+            Factory.Bind<IInterfaceB, ClassB>();
             var result = Factory.Create<IInterfaceA>();
             Assert.IsNotNull(result.DependencyB);
         }
@@ -77,13 +77,13 @@ namespace UnitTests.Iniect.io
         [ExpectedException(typeof(Factory.InterfaceNotImplementedByClassException))]
         public void Register_WrongClass_Exception()
         {
-            Factory.Register<IInterfaceA, ClassB>();
+            Factory.Bind<IInterfaceA, ClassB>();
         }
 
         [TestMethod]
         public void CreateTwice_SameObject()
         {
-            Factory.Register<IInterfaceA, ClassA>();
+            Factory.Bind<IInterfaceA, ClassA>();
             var result1 = Factory.Create<IInterfaceA>();
             var result2 = Factory.Create<IInterfaceA>();
             Assert.AreSame(result1, result2);
@@ -93,7 +93,7 @@ namespace UnitTests.Iniect.io
         public void RegisterInstanceCreate_areEqual()
         {
             var objectA = new ClassA();
-            Factory.Register<IInterfaceA>(objectA);
+            Factory.Bind<IInterfaceA>(objectA);
             var createdObjectA = Factory.Create<IInterfaceA>();
             Assert.AreSame(objectA, createdObjectA);
         }

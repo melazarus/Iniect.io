@@ -12,22 +12,22 @@ namespace UnitTests.Iniect.io
         [TestMethod]
         public void Default_false()
         {
-            var result = Factory.IsRegistered<IUnImplemented>();
+            var result = Factory.IsBound<IUnImplemented>();
             Assert.IsFalse(result);
         }
 
         [TestMethod]
         public void Default_SameAssembly_true()
         {
-            var result = Factory.IsRegistered<IInterfaceA>();
+            var result = Factory.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void Register_DirectAssembly_true()
         {
-            Factory.Register<IInterfaceA>(Assembly.GetExecutingAssembly());
-            var result = Factory.IsRegistered<IInterfaceA>();
+            Factory.Bind<IInterfaceA>(Assembly.GetExecutingAssembly());
+            var result = Factory.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
@@ -35,8 +35,8 @@ namespace UnitTests.Iniect.io
         public void Register_AutomaticAssembly_true()
         {
             Factory.AutomaticMatchAssembly = Assembly.GetExecutingAssembly();
-            Factory.Register<IInterfaceA>();
-            var result = Factory.IsRegistered<IInterfaceA>();
+            Factory.Bind<IInterfaceA>();
+            var result = Factory.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
@@ -44,14 +44,14 @@ namespace UnitTests.Iniect.io
         [ExpectedException(typeof(Factory.NoImplementationFoundException))]
         public void Register_UnImplemented_Exception()
         {
-            Factory.Register<IUnImplemented>(Assembly.GetExecutingAssembly());
+            Factory.Bind<IUnImplemented>(Assembly.GetExecutingAssembly());
         }
 
         [TestMethod]
         [ExpectedException(typeof(Factory.MultipleImplementationFoundException))]
         public void Register_MultipleImplemented_Exception()
         {
-            Factory.Register<IMultipleImplements>(Assembly.GetExecutingAssembly());
+            Factory.Bind<IMultipleImplements>(Assembly.GetExecutingAssembly());
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace UnitTests.Iniect.io
         public void Register_NullAssembly_exception()
         {
             Assembly nullAssembly = null;
-            Factory.Register<IInterfaceA>(nullAssembly);
+            Factory.Bind<IInterfaceA>(nullAssembly);
         }
     }
 }

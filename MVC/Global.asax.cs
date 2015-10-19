@@ -18,13 +18,13 @@ namespace MVC
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            RegisterServices();
+            BindServices();
         }
 
-        private void RegisterServices()
+        private void BindServices()
         {
-            Factory.Register<IWelcomeService, BasicWelcomeService>();
-            //Factory.Register<IWelcomeService, TimeWelcomeService>();
+            Factory.Bind<IWelcomeService, BasicWelcomeService>();
+            //Factory.Bind<IWelcomeService, TimeWelcomeService>();
         }
     }
 }
