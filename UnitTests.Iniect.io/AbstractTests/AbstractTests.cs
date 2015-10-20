@@ -7,6 +7,7 @@ namespace UnitTests.Iniect.io.AbstractTests
     public class AbstractTests
     {
         [TestMethod]
+        [ExpectedException(typeof(TypeBindException))]
         public void BindInterfaceToAbstractClass_Exception()
         {
             var f = new Factory();

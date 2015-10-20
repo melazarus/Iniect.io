@@ -88,12 +88,12 @@ namespace Iniect.io
             Bind(type, assembly);
         }
 
-        public void Bind<TInterface, TClass>()
+        public void Bind<TSource, TTarget>()
         {
-            var interfaceType = typeof(TInterface);
-            var classType = typeof(TClass);
+            var sourceType = typeof(TSource);
+            var targetType = typeof(TTarget);
 
-            Bind(interfaceType, classType);
+            Bind(sourceType, targetType);
         }
 
         public void Bind<TInterface>(TInterface implementation)
@@ -173,14 +173,15 @@ namespace Iniect.io
             }
         }
 
-        private void Bind(Type interfaceType, Type classType)
+        private void Bind(Type sourceType, Type targetType)
         {
-            if (!interfaceType.IsInterface) throw new Exception("Type must be an interface.");
-            if (classType.IsInterface) throw new Exception("classType must be a class.");
-            if (!interfaceType.IsAssignableFrom(classType)) throw new InterfaceNotImplementedByClassException();
-            if (MatchRegistry.ContainsKey(interfaceType)) return;
+            if (targetType.IsAbstract) throw new TypeBindException("Target type cannot be abstract");
+            if (!sourceType.IsInterface) throw new Exception("Type must be an interface.");
+            if (targetType.IsInterface) throw new Exception("targetType must be a class.");
+            if (!sourceType.IsAssignableFrom(targetType)) throw new InterfaceNotImplementedByClassException();
+            if (MatchRegistry.ContainsKey(sourceType)) return;
 
-            MatchRegistry.TryAdd(interfaceType, classType);
+            MatchRegistry.TryAdd(sourceType, targetType);
         }
 
         private bool IsBound(Type interfaceType)
