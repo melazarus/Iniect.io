@@ -10,7 +10,7 @@ namespace UnitTests.Iniect.io
         {
             //Since the Factory is static we need to call Reset before each test
             //Otherwise the order of the tests my influence their outcome
-            Factory.Reset();
+            Factory.Static.Reset();
         }
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="TestDomain\IMultipleImplements.cs" />
     <Compile Include="FactoryConstructorTests.cs" />
     <Compile Include="InjectTests.cs" />
+    <Compile Include="InstanceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Iniect.io\Iniect.io.csproj">

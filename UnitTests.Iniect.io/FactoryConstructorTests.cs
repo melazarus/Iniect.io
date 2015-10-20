@@ -12,7 +12,7 @@ namespace UnitTests.Iniect.io
         [TestMethod]
         public void DiViaInstructor_NotNull()
         {
-            var result = Factory.Create<ICtorA>();
+            var result = Factory.Static.Create<ICtorA>();
             Assert.IsNotNull(result.ExtraProperty);
         }
     }

@@ -13,7 +13,7 @@ namespace UnitTests.Iniect.io
         {
             var a = new ClassA();
             Assert.IsNull(a.DependencyB);
-            Factory.Inject(a);
+            Factory.Static.Inject(a);
             Assert.IsNotNull(a.DependencyB);
         }
     }

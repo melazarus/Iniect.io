@@ -55,21 +55,24 @@ namespace Iniect.io
     {
         #region Properties
 
+        private static Factory _staticFactory;
+        public static Factory Static => _staticFactory ?? (_staticFactory = new Factory());
+
         //Todo: find better name
-        public static Assembly AutomaticMatchAssembly { get; set; } = null;
+        public Assembly AutomaticMatchAssembly { get; set; } = null;
 
         //TODO: implement
-        public static int MaxDiLevel { get; set; } = 5;
+        public int MaxDiLevel { get; set; } = 5;
 
         #endregion Properties
 
         #region fields
 
-        private static ConcurrentDictionary<Type, Type> _matchRegistry;
-        private static ConcurrentDictionary<Type, object> _instanceRegistry;
+        private ConcurrentDictionary<Type, Type> _matchRegistry;
+        private ConcurrentDictionary<Type, object> _instanceRegistry;
 
-        private static ConcurrentDictionary<Type, Type> MatchRegistry => _matchRegistry ?? (_matchRegistry = new ConcurrentDictionary<Type, Type>());
-        private static ConcurrentDictionary<Type, object> InstanceRegistry => _instanceRegistry ?? (_instanceRegistry = new ConcurrentDictionary<Type, object>());
+        private ConcurrentDictionary<Type, Type> MatchRegistry => _matchRegistry ?? (_matchRegistry = new ConcurrentDictionary<Type, Type>());
+        private ConcurrentDictionary<Type, object> InstanceRegistry => _instanceRegistry ?? (_instanceRegistry = new ConcurrentDictionary<Type, object>());
 
         #endregion fields
 
@@ -82,7 +85,7 @@ namespace Iniect.io
         /// </summary>
         /// <typeparam name="T">Interface to Bind</typeparam>
         /// <param name="assembly"></param>
-        public static void Bind<T>(Assembly assembly = null)
+        public void Bind<T>(Assembly assembly = null)
         {
             var type = typeof(T);
 
@@ -93,7 +96,7 @@ namespace Iniect.io
             Bind(type, assembly);
         }
 
-        public static void Bind<TInterface, TClass>()
+        public void Bind<TInterface, TClass>()
         {
             var interfaceType = typeof(TInterface);
             var classType = typeof(TClass);
@@ -101,13 +104,13 @@ namespace Iniect.io
             Bind(interfaceType, classType);
         }
 
-        public static void Bind<TInterface>(TInterface implementation)
+        public void Bind<TInterface>(TInterface implementation)
         {
             var interfaceType = typeof(TInterface);
             InstanceRegistry.TryAdd(interfaceType, implementation);
         }
 
-        public static bool IsBound<T>()
+        public bool IsBound<T>()
         {
             return IsBound(typeof(T));
         }
@@ -116,12 +119,12 @@ namespace Iniect.io
         /// Takes the current object and injects dependencies into properties/fields
         /// </summary>
         /// <param name="o"></param>
-        public static void Inject(object o)
+        public void Inject(object o)
         {
             InjectProperties(o);
         }
 
-        public static T Create<T>()
+        public T Create<T>()
         {
             var ttype = typeof(T);
 
@@ -134,12 +137,12 @@ namespace Iniect.io
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T CreateNew<T>() { throw new NotImplementedException(); }
+        public T CreateNew<T>() { throw new NotImplementedException(); }
 
         /// <summary>
         /// Resets to Facotry defaults
         /// </summary>
-        public static void Reset()
+        public void Reset()
         {
             MatchRegistry.Clear();
             InstanceRegistry.Clear();
@@ -151,7 +154,7 @@ namespace Iniect.io
 
         #region Private Methods
 
-        private static void Bind(Type type, Assembly assembly)
+        private void Bind(Type type, Assembly assembly)
         {
             var implementations = assembly
                 .GetTypes()
@@ -164,7 +167,7 @@ namespace Iniect.io
             Bind(type, implementations.First());
         }
 
-        private static bool TryBind(Type type, Assembly assembly)
+        private bool TryBind(Type type, Assembly assembly)
         {
             try
             {
@@ -178,7 +181,7 @@ namespace Iniect.io
             }
         }
 
-        private static void Bind(Type interfaceType, Type classType)
+        private void Bind(Type interfaceType, Type classType)
         {
             if (!interfaceType.IsInterface) throw new Exception("Type must be an interface."); //TODO: replace by custom exception
             if (classType.IsInterface) throw new Exception("classType must be a class."); //TODO: replace by custom exception
@@ -188,7 +191,7 @@ namespace Iniect.io
             MatchRegistry.TryAdd(interfaceType, classType);
         }
 
-        private static bool IsBound(Type interfaceType)
+        private bool IsBound(Type interfaceType)
         {
             TryBind(interfaceType, AutomaticMatchAssembly ?? interfaceType.Assembly);
 
@@ -196,7 +199,7 @@ namespace Iniect.io
         }
 
         //todo: refactor
-        private static object CreateInstanceFromInterface(Type ttype)
+        private object CreateInstanceFromInterface(Type ttype)
         {
             if (!IsBound(ttype)) throw new Exception("could not find interface-class map");//TODO: replace by custom exception
             {
@@ -230,7 +233,7 @@ namespace Iniect.io
         }
 
         //todo: write tests for this.
-        private static void InjectPublicFields(object instance)
+        private void InjectPublicFields(object instance)
         {
             var ttype = instance.GetType();
 
@@ -243,20 +246,20 @@ namespace Iniect.io
             }
         }
 
-        private static bool AllParametersOk(ConstructorInfo constructorInfo)
+        private bool AllParametersOk(ConstructorInfo constructorInfo)
         {
-            var OK = true;
+            var ok = true;
             foreach (var parameterInfo in constructorInfo.GetParameters())
             {
                 if (!IsBound(parameterInfo.ParameterType))
                 {
-                    OK = false;
+                    ok = false;
                 }
             }
-            return OK;
+            return ok;
         }
 
-        private static void InjectProperties(object instance)
+        private void InjectProperties(object instance)
         {
             var ttype = instance.GetType();
 
@@ -269,7 +272,7 @@ namespace Iniect.io
             }
         }
 
-        private static object Create(Type objectType)
+        private object Create(Type objectType)
         {
             if (!objectType.IsInterface) throw new TypeIsNotAnInterfaceException();
 
@@ -279,34 +282,5 @@ namespace Iniect.io
         }
 
         #endregion Private Methods
-
-        #region Exceptions
-
-        public class NullAssemblyException : Exception
-        {
-            public override string Message { get; } = "Assembly cannot be NULL";
-        }
-
-        public class NoImplementationFoundException : Exception
-        {
-            public override string Message { get; } = "Could not find an implementation for this interface";
-        }
-
-        public class MultipleImplementationFoundException : Exception
-        {
-            public override string Message { get; } = "There is more than one implementation for this interface";
-        }
-
-        public class InterfaceNotImplementedByClassException : Exception
-        {
-            public override string Message { get; } = "Class does not implement Interface";
-        }
-
-        public class TypeIsNotAnInterfaceException : Exception
-        {
-            public override string Message { get; } = "The type provided is not an Interface";
-        }
-
-        #endregion Exceptions
     }
 }

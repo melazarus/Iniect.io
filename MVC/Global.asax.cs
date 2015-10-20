@@ -23,7 +23,7 @@ namespace MVC
 
         private void BindServices()
         {
-            Factory.Bind<IWelcomeService, BasicWelcomeService>();
+            Factory.Static.Bind<IWelcomeService, BasicWelcomeService>();
             //Factory.Bind<IWelcomeService, TimeWelcomeService>();
         }
     }

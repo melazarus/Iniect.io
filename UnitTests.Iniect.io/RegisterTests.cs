@@ -12,54 +12,54 @@ namespace UnitTests.Iniect.io
         [TestMethod]
         public void Default_false()
         {
-            var result = Factory.IsBound<IUnImplemented>();
+            var result = Factory.Static.IsBound<IUnImplemented>();
             Assert.IsFalse(result);
         }
 
         [TestMethod]
         public void Default_SameAssembly_true()
         {
-            var result = Factory.IsBound<IInterfaceA>();
+            var result = Factory.Static.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void Register_DirectAssembly_true()
         {
-            Factory.Bind<IInterfaceA>(Assembly.GetExecutingAssembly());
-            var result = Factory.IsBound<IInterfaceA>();
+            Factory.Static.Bind<IInterfaceA>(Assembly.GetExecutingAssembly());
+            var result = Factory.Static.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void Register_AutomaticAssembly_true()
         {
-            Factory.AutomaticMatchAssembly = Assembly.GetExecutingAssembly();
-            Factory.Bind<IInterfaceA>();
-            var result = Factory.IsBound<IInterfaceA>();
+            Factory.Static.AutomaticMatchAssembly = Assembly.GetExecutingAssembly();
+            Factory.Static.Bind<IInterfaceA>();
+            var result = Factory.Static.IsBound<IInterfaceA>();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Factory.NoImplementationFoundException))]
+        [ExpectedException(typeof(NoImplementationFoundException))]
         public void Register_UnImplemented_Exception()
         {
-            Factory.Bind<IUnImplemented>(Assembly.GetExecutingAssembly());
+            Factory.Static.Bind<IUnImplemented>(Assembly.GetExecutingAssembly());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Factory.MultipleImplementationFoundException))]
+        [ExpectedException(typeof(MultipleImplementationFoundException))]
         public void Register_MultipleImplemented_Exception()
         {
-            Factory.Bind<IMultipleImplements>(Assembly.GetExecutingAssembly());
+            Factory.Static.Bind<IMultipleImplements>(Assembly.GetExecutingAssembly());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Factory.NullAssemblyException))]
+        [ExpectedException(typeof(NullAssemblyException))]
         public void Register_NullAssembly_exception()
         {
             Assembly nullAssembly = null;
-            Factory.Bind<IInterfaceA>(nullAssembly);
+            Factory.Static.Bind<IInterfaceA>(nullAssembly);
         }
     }
 }

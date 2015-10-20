@@ -1,5 +1,5 @@
-﻿using System.Web.Mvc;
-using Iniect.io;
+﻿using Iniect.io;
+using System.Web.Mvc;
 
 namespace MVC.Controllers
 {
@@ -7,7 +7,7 @@ namespace MVC.Controllers
     {
         public BaseController()
         {
-            Factory.Inject(this);
+            Factory.Static.Inject(this);
         }
     }
 }
