@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Factory.cs" />
     <Compile Include="InterfaceNotImplementedByClassException.cs" />
+    <Compile Include="InvalidTypeException.cs" />
     <Compile Include="MultipleImplementationFoundException.cs" />
     <Compile Include="NoImplementationFoundException.cs" />
     <Compile Include="NullAssemblyException.cs" />

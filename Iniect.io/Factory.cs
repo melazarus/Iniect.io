@@ -196,26 +196,42 @@ namespace Iniect.io
             return MatchRegistry.ContainsKey(interfaceType);
         }
 
+        private object CreateInstance(Type classType)
+        {
+            // check against interface and abstract
+            if (!IsInstantiatable(classType)) throw new InvalidTypeException("Type must be instantiatable (no Interface or Abstract Class)");
+
+            // find largest matching ctor
+            var constructor = FindLargestMatchingConstructor(classType);
+            if (constructor == null) throw new Exception("No usefull constructor found");
+            var parameters = SetParameters(constructor);
+            return constructor.Invoke(parameters);
+        }
+
+        private object[] SetParameters(ConstructorInfo constructor)
+        {
+            return constructor.GetParameters().Select(parameterInfo => Create(parameterInfo.ParameterType)).ToArray();
+        }
+
+        private ConstructorInfo FindLargestMatchingConstructor(Type classType)
+        {
+            var ctors = classType.GetConstructors();
+
+            return ctors.Where(AllParametersOk).OrderByDescending(x => x.GetParameters().Count()).FirstOrDefault();
+        }
+
+        private static bool IsInstantiatable(Type classType)
+        {
+            return (!classType.IsInterface && !classType.IsAbstract);
+        }
+
         private object CreateInstanceFromInterface(Type ttype)
         {
             if (!IsBound(ttype)) throw new Exception("could not find interface-class map");
             {
                 var implementationType = MatchRegistry[ttype];
 
-                var ctors = implementationType.GetConstructors();
-
-                var ctor = ctors.Where(AllParametersOk).OrderByDescending(x => x.GetParameters().Count()).FirstOrDefault();
-
-                if (ctor == null) throw new Exception("No usefull constructor found");
-
-                var parameters = new List<object>();
-
-                foreach (var parameterInfo in ctor.GetParameters())
-                {
-                    parameters.Add(Create(parameterInfo.ParameterType));
-                }
-
-                var instance = ctor.Invoke(parameters.ToArray());
+                var instance = CreateInstance(implementationType);
 
                 if (!_instanceRegistry.ContainsKey(ttype))
                 {
