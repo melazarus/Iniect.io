@@ -266,8 +266,6 @@ namespace Iniect.io
 
         private object Create(Type objectType)
         {
-            if (!objectType.IsInterface) throw new TypeIsNotAnInterfaceException();
-
             if (!InstanceRegistry.ContainsKey(objectType)) CreateInstanceFromInterface(objectType);
 
             return InstanceRegistry[objectType];
