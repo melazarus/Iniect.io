@@ -22,7 +22,7 @@ namespace UnitTests.Iniect.io.AbstractTests
 
             f.Bind<ITestInterface, TestClass>();
 
-            Assert.IsNotNull(f.CreateNew<ITestInterface>());
+            Assert.IsNotNull(f.Create<ITestInterface>());
         }
 
         [TestMethod]
@@ -32,7 +32,7 @@ namespace UnitTests.Iniect.io.AbstractTests
 
             f.Bind<AbstractTestClass, TestClass>();
 
-            Assert.IsNotNull(f.CreateNew<AbstractTestClass>());
+            Assert.IsNotNull(f.Create<AbstractTestClass>());
         }
     }
 }
