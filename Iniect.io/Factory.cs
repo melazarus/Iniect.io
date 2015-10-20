@@ -22,26 +22,20 @@
                 hard bind the interface to the class
             - interface to instance
                 hard bind the interface to an instance of a class (Object)
-            - TODO: Import/Export binding information
 
         Auto resolve dependencies
-            in constructors, properties and TODO: public fields
+            in constructors, properties and public fields
 
         Reuse objects (default on)
-            elliminates circular references. TODO:  Can be overridden
+            elliminates circular references.
 
         Force create new object
-            TODO: always create a new object, don't reuse existing ones
 
         Maximum dependency injection level (default = 5)
-            TODO: feature to elumminate endless loops.
 
         Provide extra parameters to the constructor
-            TODO: Factory.Create<IInterface>(new {paramA = "valueA", paramB = 15});
             This will allways create a new instance!
 */
-
-//todo: find a way to create instances of the factory
 
 using System;
 using System.Collections.Concurrent;
@@ -58,10 +52,8 @@ namespace Iniect.io
         private static Factory _staticFactory;
         public static Factory Static => _staticFactory ?? (_staticFactory = new Factory());
 
-        //Todo: find better name
         public Assembly AutomaticMatchAssembly { get; set; } = null;
 
-        //TODO: implement
         public int MaxDiLevel { get; set; } = 5;
 
         #endregion Properties
@@ -183,8 +175,8 @@ namespace Iniect.io
 
         private void Bind(Type interfaceType, Type classType)
         {
-            if (!interfaceType.IsInterface) throw new Exception("Type must be an interface."); //TODO: replace by custom exception
-            if (classType.IsInterface) throw new Exception("classType must be a class."); //TODO: replace by custom exception
+            if (!interfaceType.IsInterface) throw new Exception("Type must be an interface.");
+            if (classType.IsInterface) throw new Exception("classType must be a class.");
             if (!interfaceType.IsAssignableFrom(classType)) throw new InterfaceNotImplementedByClassException();
             if (MatchRegistry.ContainsKey(interfaceType)) return;
 
@@ -198,10 +190,9 @@ namespace Iniect.io
             return MatchRegistry.ContainsKey(interfaceType);
         }
 
-        //todo: refactor
         private object CreateInstanceFromInterface(Type ttype)
         {
-            if (!IsBound(ttype)) throw new Exception("could not find interface-class map");//TODO: replace by custom exception
+            if (!IsBound(ttype)) throw new Exception("could not find interface-class map");
             {
                 var implementationType = MatchRegistry[ttype];
 
@@ -232,7 +223,6 @@ namespace Iniect.io
             }
         }
 
-        //todo: write tests for this.
         private void InjectPublicFields(object instance)
         {
             var ttype = instance.GetType();
