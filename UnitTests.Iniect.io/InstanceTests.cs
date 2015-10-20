@@ -1,6 +1,5 @@
 ﻿using Iniect.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace UnitTests.Iniect.io
 {

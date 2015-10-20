@@ -1,7 +1,5 @@
 ﻿using Iniect.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using UnitTests.Iniect.io.TestDomain;
 using UnitTests.Iniect.io.TestDomain.Constructor;
 
 namespace UnitTests.Iniect.io
