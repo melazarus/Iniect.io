@@ -61,12 +61,16 @@ namespace Iniect.io
         #region fields
 
         private ConcurrentDictionary<Type, Type> _matchRegistry;
-        private ConcurrentDictionary<Type, object> _instanceRegistry;
+        private ConcurrentDictionary<Type, WeakReference> _instanceRegistry;
 
         private ConcurrentDictionary<Type, Type> MatchRegistry => _matchRegistry ?? (_matchRegistry = new ConcurrentDictionary<Type, Type>());
-        private ConcurrentDictionary<Type, object> InstanceRegistry => _instanceRegistry ?? (_instanceRegistry = new ConcurrentDictionary<Type, object>());
 
         #endregion fields
+
+        public Factory()
+        {
+            _instanceRegistry = new ConcurrentDictionary<Type, WeakReference>();
+        }
 
         // Public methods call their private-non-generic counterparts.
 
@@ -99,7 +103,7 @@ namespace Iniect.io
         public void Bind<TInterface>(TInterface implementation)
         {
             var interfaceType = typeof(TInterface);
-            InstanceRegistry.TryAdd(interfaceType, implementation);
+            _instanceRegistry.TryAdd(interfaceType, new WeakReference(implementation));
         }
 
         public bool IsBound<T>()
@@ -137,7 +141,7 @@ namespace Iniect.io
         public void Reset()
         {
             MatchRegistry.Clear();
-            InstanceRegistry.Clear();
+            _instanceRegistry.Clear();
             AutomaticMatchAssembly = null;
             MaxDiLevel = 5;
         }
@@ -213,9 +217,9 @@ namespace Iniect.io
 
                 var instance = ctor.Invoke(parameters.ToArray());
 
-                if (!InstanceRegistry.ContainsKey(ttype))
+                if (!_instanceRegistry.ContainsKey(ttype))
                 {
-                    InstanceRegistry.TryAdd(ttype, instance);
+                    _instanceRegistry.TryAdd(ttype, new WeakReference(instance));
                 }
 
                 InjectProperties(instance);
@@ -255,7 +259,7 @@ namespace Iniect.io
         {
             var ttype = instance.GetType();
 
-            var diProperties = ttype.GetProperties() //x.GetValue may throw an exception when the getter throw.
+            var diProperties = ttype.GetProperties()
                 .Where(x => x.CanWrite && x.PropertyType.IsInterface && IsBound(x.PropertyType) && x.GetValue(instance) == null)
                 .ToList();
             foreach (var propertyInfo in diProperties)
@@ -266,9 +270,11 @@ namespace Iniect.io
 
         private object Create(Type objectType)
         {
-            if (!InstanceRegistry.ContainsKey(objectType)) CreateInstanceFromInterface(objectType);
+            WeakReference reference;
+            if (_instanceRegistry.ContainsKey(objectType) && !_instanceRegistry[objectType].IsAlive) _instanceRegistry.TryRemove(objectType, out reference);
+            if (!_instanceRegistry.ContainsKey(objectType)) CreateInstanceFromInterface(objectType);
 
-            return InstanceRegistry[objectType];
+            return _instanceRegistry[objectType].Target;
         }
 
         #endregion Private Methods
