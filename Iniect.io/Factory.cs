@@ -176,8 +176,9 @@ namespace Iniect.io
         private void Bind(Type sourceType, Type targetType)
         {
             if (targetType.IsAbstract) throw new TypeBindException("Target type cannot be abstract");
-            if (!sourceType.IsInterface) throw new Exception("Type must be an interface.");
-            if (targetType.IsInterface) throw new Exception("targetType must be a class.");
+            if (targetType.IsInterface) throw new TypeBindException("Target type cannot be an interface");
+            if (!(sourceType.IsInterface || sourceType.IsAbstract)) throw new TypeBindException("Source type must be Interface or Abstract");
+
             if (!sourceType.IsAssignableFrom(targetType)) throw new InterfaceNotImplementedByClassException();
             if (MatchRegistry.ContainsKey(sourceType)) return;
 

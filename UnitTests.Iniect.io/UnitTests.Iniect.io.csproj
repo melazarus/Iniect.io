@@ -53,7 +53,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AbstractTests\AbstractTests.cs" />
-    <Compile Include="AbstractTests\UnitTest1.cs" />
+    <Compile Include="AbstractTests\ITestInterface.cs" />
+    <Compile Include="AbstractTests\TestClass.cs" />
+    <Compile Include="AbstractTests\AbstractTestClass.cs" />
     <Compile Include="SuperTestClass.cs" />
     <Compile Include="TestDomain\ClassA.cs" />
     <Compile Include="TestDomain\ClassB.cs" />
