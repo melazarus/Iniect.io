@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace UnitTests.Iniect.io.AbstractTests
+﻿namespace UnitTests.Iniect.io.AbstractTests
 {
     public abstract class AbstractTestClass : ITestInterface { }
 }
