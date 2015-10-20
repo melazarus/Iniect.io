@@ -41,14 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Factory.cs" />
-    <Compile Include="InterfaceNotImplementedByClassException.cs" />
-    <Compile Include="InvalidTypeException.cs" />
-    <Compile Include="MultipleImplementationFoundException.cs" />
-    <Compile Include="NoImplementationFoundException.cs" />
-    <Compile Include="NullAssemblyException.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeBindException.cs" />
-    <Compile Include="TypeIsNotAnInterfaceException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

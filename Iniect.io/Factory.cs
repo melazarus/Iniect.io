@@ -87,7 +87,7 @@ namespace Iniect.io
 
             assembly = assembly ?? AutomaticMatchAssembly;
 
-            if (assembly == null) throw new NullAssemblyException();
+            if (assembly == null) throw new NullAssemblyException("Assembly cannot be null");
 
             Bind(type, assembly);
         }
@@ -157,8 +157,8 @@ namespace Iniect.io
                 .Where(type.IsAssignableFrom)
                 .Where(x => !x.IsInterface)
                 .ToList();
-            if (implementations.Count == 0) throw new NoImplementationFoundException();
-            if (implementations.Count > 1) throw new MultipleImplementationFoundException();
+            if (implementations.Count == 0) throw new NoImplementationFoundException("Unable to find a implementation");
+            if (implementations.Count > 1) throw new MultipleImplementationFoundException("Found more than one implementation");
 
             Bind(type, implementations.First());
         }
@@ -183,7 +183,7 @@ namespace Iniect.io
             if (targetType.IsInterface) throw new TypeBindException("Target type cannot be an interface");
             if (!(sourceType.IsInterface || sourceType.IsAbstract)) throw new TypeBindException("Source type must be Interface or Abstract");
 
-            if (!sourceType.IsAssignableFrom(targetType)) throw new InterfaceNotImplementedByClassException();
+            if (!sourceType.IsAssignableFrom(targetType)) throw new InterfaceNotImplementedByClassException("Target type is not assignalble to source type");
             if (MatchRegistry.ContainsKey(sourceType)) return;
 
             MatchRegistry.TryAdd(sourceType, targetType);
