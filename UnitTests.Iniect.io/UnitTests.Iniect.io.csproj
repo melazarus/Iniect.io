@@ -52,6 +52,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AbstractTests\AbstractTests.cs" />
+    <Compile Include="AbstractTests\UnitTest1.cs" />
     <Compile Include="SuperTestClass.cs" />
     <Compile Include="TestDomain\ClassA.cs" />
     <Compile Include="TestDomain\ClassB.cs" />
